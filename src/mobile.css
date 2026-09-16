@@ -2,6 +2,10 @@
 .world{--world-dim:0;}
 .world-dim{position:absolute;inset:0;z-index:8;background:rgba(0,0,0,var(--world-dim));pointer-events:none;transition:background-color .08s linear;}
 
+/* No divider/black line under the fixed navigation. */
+.nav{border-bottom-color:transparent!important;box-shadow:none!important}
+.nav:hover,.nav:focus-within{border-bottom-color:transparent!important;box-shadow:none!important}
+
 @media (max-width: 900px){
   html{scroll-padding-top:72px}
   .nav{height:64px;padding:0 14px;background:linear-gradient(180deg,rgba(2,7,4,.72),transparent)}
