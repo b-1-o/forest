@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUpRight, Check, Code2, ExternalLink, Layers3, Sparkles 
 import forestImage from '../assets/main wp.jpg'
 import './styles.css'
 import './performance.css'
+import './mobile.css'
 
 const navItems = ['about', 'services', 'stack', 'work', 'learning', 'contact'] as const
 const services = [
