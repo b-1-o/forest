@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, ArrowUpRight, Check, Code2, ExternalLink, Layers3, Sparkles } from 'lucide-react'
 import forestImage from '../assets/main wp.jpg'
 import './styles.css'
-import './cursor-hud.css'
 import './performance.css'
 
 const navItems = ['about', 'services', 'stack', 'work', 'learning', 'contact'] as const
@@ -146,7 +145,7 @@ function App() {
 
         <section id="work" className="immersive-section work-section"><div className="section-number">04 / SELECTED WORK</div><Reveal><div className="section-intro"><span>PROJECTS</span><h3>Ideas turned into <em>interfaces.</em></h3></div></Reveal><div className="project-list">{projects.map((project, index) => <Reveal key={project.n} delay={index * 0.08} className="glass-panel project-row"><span className="row-number">{project.n}</span><div className="project-main"><small>{project.type}</small><h4>{project.title}</h4><p>{project.text}</p></div><ArrowUpRight className="row-arrow" size={24} /></Reveal>)}</div></section>
 
-        <section id="learning" className="immersive-section learning-section"><div className="section-number">05 / LEARNING</div><Reveal className="learning-layout"><div className="glass-panel learning-copy"><span>CURRENTLY EXPLORING</span><h3>Still learning.<br /><em>Always building.</em></h3><p>Curiosity is part of the work. I’m exploring lower-level systems, graphics and advanced frontend techniques to understand more of what happens underneath the interface.</p></div><div className="glass-panel learning-list">{learning.map((item, index) => <div key={item}><span>0{index + 1}</span><b>{item}</b><ArrowUpRight size={16} /></div>)}</div></Reveal></section>
+        <section id="learning" className="immersive-section learning-section"><div className="section-number">05 / LEARNING</div><Reveal className="learning-layout"><div className="glass-panel learning-copy"><span>CURRENTLY EXPLORING</span><h3>Still learning.<br /><em>Always building.</em></h3><p>Curiosity is part of the work. I’m exploring lower-level systems, graphics and advanced frontend techniques to understand more of what happens underneath the interface.</p></div><div className="glass-panel learning-list">{learning.map((item, index) => <div key={item}><span>0{index + 1}</span><b>{item}</b><ArrowUpRight size={16} /></div>)}</Reveal></section>
 
         <section className="principle-section"><Reveal className="principle"><span>THE PRINCIPLE</span><h3>Less noise.<br /><em>More signal.</em></h3><p>Every transition has a reason. Every pixel earns its place.</p></Reveal></section>
 
