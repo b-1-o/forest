@@ -33,10 +33,10 @@ function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; 
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 48, filter: 'blur(8px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      initial={{ opacity: 0, y: 44, scale: 0.985 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-12% 0px' }}
-      transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
     >{children}</motion.div>
   )
 }
@@ -44,18 +44,7 @@ function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; 
 function App() {
   const [intro, setIntro] = useState(true)
   const [active, setActive] = useState('home')
-  const activeRef = useRef(active)
   const worldRef = useRef<HTMLDivElement>(null)
-  const cursorHudRef = useRef<HTMLDivElement>(null)
-  const cursorXRef = useRef<HTMLSpanElement>(null)
-  const cursorYRef = useRef<HTMLSpanElement>(null)
-  const cursorSpeedRef = useRef<HTMLSpanElement>(null)
-  const cursorSectionRef = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    activeRef.current = active
-    cursorSectionRef.current?.replaceChildren(document.createTextNode(`/${active.toUpperCase()}`))
-  }, [active])
 
   useEffect(() => {
     const timer = window.setTimeout(() => setIntro(false), 3000)
@@ -68,40 +57,22 @@ function App() {
 
     let pointerX = window.innerWidth / 2
     let pointerY = window.innerHeight / 2
-    let previousX = pointerX
-    let previousY = pointerY
     let smoothX = 0
     let smoothY = 0
     let frame = 0
     let pointerDirty = true
     let scrollDirty = true
-    let hideTimer = 0
-    let lastHudTime = 0
 
-    const paint = (time = performance.now()) => {
+    const paint = () => {
       frame = 0
       const targetX = (pointerX / Math.max(window.innerWidth, 1) - 0.5) * 2
       const targetY = (pointerY / Math.max(window.innerHeight, 1) - 0.5) * 2
-      smoothX += (targetX - smoothX) * 0.12
-      smoothY += (targetY - smoothY) * 0.12
+      smoothX += (targetX - smoothX) * 0.1
+      smoothY += (targetY - smoothY) * 0.1
 
       if (pointerDirty) {
-        const velocity = Math.min(Math.hypot(pointerX - previousX, pointerY - previousY), 99)
-        previousX += (pointerX - previousX) * 0.18
-        previousY += (pointerY - previousY) * 0.18
         target.style.setProperty('--pointer-x', smoothX.toFixed(4))
         target.style.setProperty('--pointer-y', smoothY.toFixed(4))
-        target.style.setProperty('--mouse-x', `${pointerX}px`)
-        target.style.setProperty('--mouse-y', `${pointerY}px`)
-        target.style.setProperty('--cursor-energy', `${Math.min(1, velocity / 28).toFixed(3)}`)
-
-        if (time - lastHudTime > 60) {
-          lastHudTime = time
-          cursorXRef.current && (cursorXRef.current.textContent = String(Math.round(pointerX)).padStart(4, '0'))
-          cursorYRef.current && (cursorYRef.current.textContent = String(Math.round(pointerY)).padStart(4, '0'))
-          cursorSpeedRef.current && (cursorSpeedRef.current.textContent = String(Math.round(velocity)).padStart(2, '0'))
-          cursorSectionRef.current && (cursorSectionRef.current.textContent = `/${activeRef.current.toUpperCase()}`)
-        }
         pointerDirty = false
       }
 
@@ -124,16 +95,12 @@ function App() {
       pointerX = event.clientX
       pointerY = event.clientY
       pointerDirty = true
-      cursorHudRef.current?.classList.add('is-moving')
-      window.clearTimeout(hideTimer)
-      hideTimer = window.setTimeout(() => cursorHudRef.current?.classList.remove('is-moving'), 140)
       scheduleFrame()
     }
     const onLeave = () => {
       pointerX = window.innerWidth / 2
       pointerY = window.innerHeight / 2
       pointerDirty = true
-      cursorHudRef.current?.classList.remove('is-moving')
       scheduleFrame()
     }
     const updateScroll = () => {
@@ -143,7 +110,6 @@ function App() {
 
     target.style.setProperty('--pointer-x', '0')
     target.style.setProperty('--pointer-y', '0')
-    target.style.setProperty('--cursor-energy', '0')
     target.style.setProperty('--scroll-progress', '0')
     paint()
 
@@ -156,7 +122,6 @@ function App() {
       window.removeEventListener('mouseleave', onLeave)
       window.removeEventListener('scroll', updateScroll)
       window.removeEventListener('resize', updateScroll)
-      window.clearTimeout(hideTimer)
       cancelAnimationFrame(frame)
     }
   }, [])
@@ -181,7 +146,7 @@ function App() {
       <a className="skip" href="#about">Skip to content</a>
       <AnimatePresence>
         {intro && (
-          <motion.div className="intro" exit={{ opacity: 0, scale: 1.025, filter: 'blur(12px)' }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
+          <motion.div className="intro" exit={{ opacity: 0, scale: 1.025, filter: 'blur(8px)' }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
             <div className="intro-mark" /><span>WEB / UI / DEVELOPMENT</span><h1>Into the quiet.</h1>
             <div className="intro-loader"><motion.i initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 2.6, ease: [0.16, 1, 0.3, 1] }} /></div>
             <small>THE WORLD MOVES SLOWLY</small>
@@ -196,12 +161,6 @@ function App() {
         <div className="world-layer world-near"><img src={foregroundImage} alt="" /></div>
         <div className="world-layer world-fog-image"><img src={fogImage} alt="" /></div>
         <div className="world-light" /><div className="world-fog world-fog-one" /><div className="world-fog world-fog-two" /><div className="world-vignette" />
-        <div className="world-cursor-hud" ref={cursorHudRef}>
-          <div className="cursor-crosshair" /><div className="cursor-line cursor-line-x" /><div className="cursor-line cursor-line-y" />
-          <div className="cursor-data cursor-data-top"><span>X <b ref={cursorXRef}>0000</b></span><span>Y <b ref={cursorYRef}>0000</b></span></div>
-          <div className="cursor-data cursor-data-bottom"><span>SPD <b ref={cursorSpeedRef}>00</b></span><span ref={cursorSectionRef}>/HOME</span></div>
-          <div className="cursor-bracket cursor-bracket-tl" /><div className="cursor-bracket cursor-bracket-tr" /><div className="cursor-bracket cursor-bracket-bl" /><div className="cursor-bracket cursor-bracket-br" />
-        </div>
       </div>
 
       <header className="nav">
@@ -213,9 +172,9 @@ function App() {
       <main>
         <section id="home" className="hero"><div className="hero-glow" /><div className="hero-copy">
           <motion.p className="eyebrow" initial={{ opacity: 0, y: 20 }} animate={{ opacity: intro ? 0 : 1, y: intro ? 20 : 0 }} transition={{ duration: 0.8 }}>WEB DEVELOPER / UI / DIGITAL</motion.p>
-          <motion.h2 initial={{ opacity: 0, y: 60, filter: 'blur(14px)' }} animate={{ opacity: intro ? 0 : 1, y: intro ? 60 : 0, filter: intro ? 'blur(14px)' : 'blur(0px)' }} transition={{ delay: 0.15, duration: 1.15, ease: [0.16, 1, 0.3, 1] }}>I make small<br /><em>businesses</em> look<br />like they mean it.</motion.h2>
-          <motion.p className="hero-description" initial={{ opacity: 0 }} animate={{ opacity: intro ? 0 : 1 }} transition={{ delay: 0.55, duration: 0.8 }}>Clean interfaces. Responsive websites. Thoughtful motion.<br />Built to be useful, fast and unmistakably yours.</motion.p>
-          <motion.button className="enter-button" initial={{ opacity: 0, y: 25 }} animate={{ opacity: intro ? 0 : 1, y: intro ? 25 : 0 }} transition={{ delay: 0.8, duration: 0.8 }} onClick={() => goTo('about')}><span>ENTER THE WORK</span><ArrowDown size={15} /></motion.button>
+          <motion.h2 initial={{ opacity: 0, y: 60, filter: 'blur(10px)' }} animate={{ opacity: intro ? 0 : 1, y: intro ? 60 : 0, filter: intro ? 'blur(10px)' : 'blur(0px)' }} transition={{ delay: 0.15, duration: 1.05, ease: [0.16, 1, 0.3, 1] }}>I make small<br /><em>businesses</em> look<br />like they mean it.</motion.h2>
+          <motion.p className="hero-description" initial={{ opacity: 0 }} animate={{ opacity: intro ? 0 : 1 }} transition={{ delay: 0.5, duration: 0.75 }}>Clean interfaces. Responsive websites. Thoughtful motion.<br />Built to be useful, fast and unmistakably yours.</motion.p>
+          <motion.button className="enter-button" initial={{ opacity: 0, y: 25 }} animate={{ opacity: intro ? 0 : 1, y: intro ? 25 : 0 }} transition={{ delay: 0.75, duration: 0.75 }} onClick={() => goTo('about')}><span>ENTER THE WORK</span><ArrowDown size={15} /></motion.button>
         </div><div className="hero-bottom"><span>THE DIGITAL FOREST / 01</span><span><i /> SCROLL TO EXPLORE</span></div></section>
 
         <section id="about" className="immersive-section about-section"><div className="section-number">01 / ABOUT</div><Reveal className="glass-panel about-panel"><div className="panel-top"><span>A QUIET APPROACH TO LOUD IDEAS</span><span>01 — 06</span></div><div className="about-layout"><h3>Good digital work should <em>feel inevitable.</em></h3><div className="about-text"><p>I’m a web developer focused on clean interfaces, responsive layouts and websites that are easy to understand, fast to use and ready to help a business grow.</p><p>I like taking things apart, understanding how they work, then rebuilding the idea with better structure, motion and character.</p></div></div><div className="panel-tags"><span><Layers3 size={14} /> SYSTEMS</span><span><Code2 size={14} /> DEVELOPMENT</span><span><Sparkles size={14} /> MOTION</span></div></Reveal></section>
@@ -226,7 +185,7 @@ function App() {
 
         <section id="work" className="immersive-section work-section"><div className="section-number">04 / SELECTED WORK</div><Reveal><div className="section-intro"><span>PROJECTS</span><h3>Ideas turned into <em>interfaces.</em></h3></div></Reveal><div className="project-list">{projects.map((project, index) => <Reveal key={project.n} delay={index * 0.08} className="glass-panel project-row"><span className="row-number">{project.n}</span><div className="project-main"><small>{project.type}</small><h4>{project.title}</h4><p>{project.text}</p></div><ArrowUpRight className="row-arrow" size={24} /></Reveal>)}</div></section>
 
-        <section id="learning" className="immersive-section learning-section"><div className="section-number">05 / LEARNING</div><Reveal className="learning-layout"><div className="glass-panel learning-copy"><span>CURRENTLY EXPLORING</span><h3>Still learning.<br /><em>Always building.</em></h3><p>Curiosity is part of the work. I’m exploring lower-level systems, graphics and advanced frontend techniques to understand more of what happens underneath the interface.</p></div><div className="glass-panel learning-list">{learning.map((item, index) => <div key={item}><span>0{index + 1}</span><b>{item}</b><ArrowUpRight size={16} /></div>)}</div></Reveal></section>
+        <section id="learning" className="immersive-section learning-section"><div className="section-number">05 / LEARNING</div><Reveal className="learning-layout"><div className="glass-panel learning-copy"><span>CURRENTLY EXPLORING</span><h3>Still learning.<br /><em>Always building.</em></h3><p>Curiosity is part of the work. I’m exploring lower-level systems, graphics and advanced frontend techniques to understand more of what happens underneath the interface.</p></div><div className="glass-panel learning-list">{learning.map((item, index) => <div key={item}><span>0{index + 1}</span><b>{item}</b><ArrowUpRight size={16} /></div>)}</Reveal></section>
 
         <section className="principle-section"><Reveal className="principle"><span>THE PRINCIPLE</span><h3>Less noise.<br /><em>More signal.</em></h3><p>Every transition has a reason. Every pixel earns its place.</p></Reveal></section>
 
