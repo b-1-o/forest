@@ -2,11 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, ArrowUpRight, Check, Code2, ExternalLink, Layers3, Sparkles } from 'lucide-react'
-import backgroundImage from '../assets/Background.jpg'
-import midgroundImage from '../assets/Midground.jpg'
-import foregroundImage from '../assets/Foreground.jpg'
-import fogImage from '../assets/Fog Atmosphere.jpg'
-import forestBaseImage from '../assets/fforest.jpg'
+import forestImage from '../assets/main wp.jpg'
 import './styles.css'
 import './cursor-hud.css'
 import './performance.css'
@@ -52,77 +48,46 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const target = worldRef.current
-    if (!target) return
+    const handlePointerMove = (event: PointerEvent) => {
+      const element = (event.target as Element | null)?.closest<HTMLElement>('.glass-panel')
+      if (!element) return
 
-    let pointerX = window.innerWidth / 2
-    let pointerY = window.innerHeight / 2
-    let smoothX = 0
-    let smoothY = 0
-    let frame = 0
-    let pointerDirty = true
-    let scrollDirty = true
+      const rect = element.getBoundingClientRect()
+      if (!rect.width || !rect.height) return
 
-    const paint = () => {
-      frame = 0
-      const targetX = (pointerX / Math.max(window.innerWidth, 1) - 0.5) * 2
-      const targetY = (pointerY / Math.max(window.innerHeight, 1) - 0.5) * 2
-      smoothX += (targetX - smoothX) * 0.1
-      smoothY += (targetY - smoothY) * 0.1
+      const x = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1))
+      const y = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1))
+      const rotateX = -y * 2.2
+      const rotateY = x * 2.8
+      const shineX = ((event.clientX - rect.left) / rect.width) * 100
+      const shineY = ((event.clientY - rect.top) / rect.height) * 100
 
-      if (pointerDirty) {
-        target.style.setProperty('--pointer-x', smoothX.toFixed(4))
-        target.style.setProperty('--pointer-y', smoothY.toFixed(4))
-        pointerDirty = false
-      }
-
-      if (scrollDirty) {
-        const y = window.scrollY
-        const vh = window.innerHeight || 1
-        const maxScroll = Math.max(document.documentElement.scrollHeight - vh, 1)
-        target.style.setProperty('--scroll-progress', `${Math.min(y / maxScroll, 1).toFixed(4)}`)
-        scrollDirty = false
-      }
-
-      const stillMoving = Math.abs(targetX - smoothX) > 0.002 || Math.abs(targetY - smoothY) > 0.002
-      if (stillMoving || pointerDirty || scrollDirty) frame = requestAnimationFrame(paint)
+      element.style.setProperty('--glass-x', x.toFixed(3))
+      element.style.setProperty('--glass-y', y.toFixed(3))
+      element.style.setProperty('--glass-rx', `${rotateX.toFixed(2)}deg`)
+      element.style.setProperty('--glass-ry', `${rotateY.toFixed(2)}deg`)
+      element.style.setProperty('--glass-shine-x', `${shineX.toFixed(1)}%`)
+      element.style.setProperty('--glass-shine-y', `${shineY.toFixed(1)}%`)
+      element.classList.add('glass-hovering')
     }
 
-    const scheduleFrame = () => {
-      if (!frame) frame = requestAnimationFrame(paint)
-    }
-    const schedulePointer = (event: MouseEvent) => {
-      pointerX = event.clientX
-      pointerY = event.clientY
-      pointerDirty = true
-      scheduleFrame()
-    }
-    const onLeave = () => {
-      pointerX = window.innerWidth / 2
-      pointerY = window.innerHeight / 2
-      pointerDirty = true
-      scheduleFrame()
-    }
-    const updateScroll = () => {
-      scrollDirty = true
-      scheduleFrame()
+    const handlePointerOut = (event: PointerEvent) => {
+      const element = (event.target as Element | null)?.closest<HTMLElement>('.glass-panel')
+      const related = event.relatedTarget as Node | null
+      if (!element || (related && element.contains(related))) return
+
+      element.classList.remove('glass-hovering')
+      element.style.setProperty('--glass-rx', '0deg')
+      element.style.setProperty('--glass-ry', '0deg')
+      element.style.setProperty('--glass-shine-x', '50%')
+      element.style.setProperty('--glass-shine-y', '50%')
     }
 
-    target.style.setProperty('--pointer-x', '0')
-    target.style.setProperty('--pointer-y', '0')
-    target.style.setProperty('--scroll-progress', '0')
-    paint()
-
-    window.addEventListener('mousemove', schedulePointer, { passive: true })
-    window.addEventListener('mouseleave', onLeave)
-    window.addEventListener('scroll', updateScroll, { passive: true })
-    window.addEventListener('resize', updateScroll, { passive: true })
+    document.addEventListener('pointermove', handlePointerMove, { passive: true })
+    document.addEventListener('pointerout', handlePointerOut, { passive: true })
     return () => {
-      window.removeEventListener('mousemove', schedulePointer)
-      window.removeEventListener('mouseleave', onLeave)
-      window.removeEventListener('scroll', updateScroll)
-      window.removeEventListener('resize', updateScroll)
-      cancelAnimationFrame(frame)
+      document.removeEventListener('pointermove', handlePointerMove)
+      document.removeEventListener('pointerout', handlePointerOut)
     }
   }, [])
 
@@ -155,12 +120,8 @@ function App() {
       </AnimatePresence>
 
       <div className="world" ref={worldRef} aria-hidden="true">
-        <div className="world-base"><img src={forestBaseImage} alt="" /></div>
-        <div className="world-layer world-back"><img src={backgroundImage} alt="" /></div>
-        <div className="world-layer world-mid"><img src={midgroundImage} alt="" /></div>
-        <div className="world-layer world-near"><img src={foregroundImage} alt="" /></div>
-        <div className="world-layer world-fog-image"><img src={fogImage} alt="" /></div>
-        <div className="world-light" /><div className="world-fog world-fog-one" /><div className="world-fog world-fog-two" /><div className="world-vignette" />
+        <div className="world-base"><img src={forestImage} alt="" /></div>
+        <div className="world-vignette" />
       </div>
 
       <header className="nav">
