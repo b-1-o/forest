@@ -1,21 +1,21 @@
-/* Performance layer: keep the visual language, reduce raster size and layout work. */
+/* Performance layer: keep the visual language, reduce raster work without flattening the living forest. */
 .world{contain:layout paint;backface-visibility:hidden}
-.world-base{position:absolute;inset:-2%;z-index:0;overflow:hidden;contain:paint;pointer-events:none}
+.world-base{position:absolute;inset:-3%;z-index:0;overflow:hidden;contain:paint;pointer-events:none;filter:saturate(.98) contrast(1.02) brightness(.94)}
 .world-base img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;user-select:none;-webkit-user-drag:none}
-.world-layer{inset:-18%;contain:paint;backface-visibility:hidden;will-change:transform}
-.world-layer img{backface-visibility:hidden}
-.world-back{transform:translate3d(calc(var(--pointer-x)*8px),calc(var(--pointer-y)*5px - var(--scroll-progress)*4vh),0) scale(1.18);filter:saturate(.92) contrast(1.05) brightness(.8)}
-.world-mid{transform:translate3d(calc(var(--pointer-x)*17px),calc(var(--pointer-y)*10px - var(--scroll-progress)*7vh),0) scale(1.17);filter:saturate(.98) contrast(1.05) brightness(.76);opacity:.52}
-.world-near{transform:translate3d(calc(var(--pointer-x)*27px),calc(var(--pointer-y)*17px - var(--scroll-progress)*12vh),0) scale(1.16);filter:saturate(1) contrast(1.07) brightness(.75);opacity:.4}
-.world-fog-image{transform:translate3d(calc(var(--pointer-x)*13px),calc(var(--pointer-y)*8px - var(--scroll-progress)*5vh),0) scale(1.2);opacity:.2;filter:saturate(.94) brightness(1.13) contrast(.94);mix-blend-mode:screen}
-.world-light{inset:-10%;background:radial-gradient(ellipse 42% 26% at calc(50% + var(--pointer-x)*16px) calc(46% + var(--pointer-y)*11px),rgba(206,232,213,.105),transparent 70%),linear-gradient(180deg,rgba(183,215,192,.035),transparent 42%,rgba(2,9,5,.05));filter:none;will-change:transform}
+.world-layer{inset:-18%;contain:paint;backface-visibility:hidden;will-change:transform;overflow:hidden;mask-image:linear-gradient(to right,transparent 0%,#000 5%,#000 95%,transparent 100%),linear-gradient(to bottom,transparent 0%,#000 5%,#000 95%,transparent 100%);mask-composite:intersect;-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 5%,#000 95%,transparent 100%);-webkit-mask-composite:x-in;}
+.world-layer img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;backface-visibility:hidden}
+.world-back{transform:translate3d(calc(var(--pointer-x)*16px),calc(var(--pointer-y)*9px - var(--scroll-progress)*7vh),0) scale(1.19);opacity:.9}
+.world-mid{transform:translate3d(calc(var(--pointer-x)*32px),calc(var(--pointer-y)*18px - var(--scroll-progress)*11vh),0) scale(1.18);opacity:.5}
+.world-near{transform:translate3d(calc(var(--pointer-x)*50px),calc(var(--pointer-y)*28px - var(--scroll-progress)*18vh),0) scale(1.17);opacity:.42}
+.world-fog-image{transform:translate3d(calc(var(--pointer-x)*24px),calc(var(--pointer-y)*14px - var(--scroll-progress)*8vh),0) scale(1.21);opacity:.22;mix-blend-mode:screen}
+.world-light{inset:-10%;background:radial-gradient(ellipse 44% 29% at calc(50% + var(--pointer-x)*34px) calc(46% + var(--pointer-y)*20px),rgba(206,232,213,.115),transparent 68%),linear-gradient(180deg,rgba(183,215,192,.04),transparent 42%,rgba(2,9,5,.07));filter:none;will-change:transform}
 .world-fog{will-change:transform;filter:blur(14px)}
 .world-fog-one,.world-fog-two{will-change:transform,opacity}
 .world-vignette{background:radial-gradient(ellipse at 50% 43%,transparent 18%,rgba(2,8,5,.08) 54%,rgba(1,4,3,.62) 100%),linear-gradient(180deg,rgba(2,7,4,.24),transparent 30%,rgba(1,4,3,.44) 100%)}
 .world-cursor-hud{will-change:opacity;transform:translateZ(0)}
-.cursor-line,.cursor-crosshair,.cursor-bracket{backface-visibility:hidden}
-.glass-panel{backface-visibility:hidden;transform:translateZ(0)}
+.cursor-line,.cursor-crosshair,.cursor-segment,.cursor-bracket{backface-visibility:hidden}
+.glass-panel{backface-visibility:hidden;transform:translateZ(0);filter:none!important}
 
-@media(max-width:900px){.world-layer{inset:-22%}.world-back{transform:translate3d(calc(var(--pointer-x)*5px),calc(var(--pointer-y)*4px - var(--scroll-progress)*2vh),0) scale(1.2)}.world-mid{transform:translate3d(calc(var(--pointer-x)*10px),calc(var(--pointer-y)*6px - var(--scroll-progress)*4vh),0) scale(1.2)}.world-near{transform:translate3d(calc(var(--pointer-x)*16px),calc(var(--pointer-y)*10px - var(--scroll-progress)*7vh),0) scale(1.19)}.world-fog-image{transform:translate3d(calc(var(--pointer-x)*8px),calc(var(--pointer-y)*5px - var(--scroll-progress)*3vh),0) scale(1.24)}}
+@media(max-width:900px){.world-layer{inset:-22%}.world-back{transform:translate3d(calc(var(--pointer-x)*8px),calc(var(--pointer-y)*6px - var(--scroll-progress)*3vh),0) scale(1.21)}.world-mid{transform:translate3d(calc(var(--pointer-x)*16px),calc(var(--pointer-y)*10px - var(--scroll-progress)*5vh),0) scale(1.2)}.world-near{transform:translate3d(calc(var(--pointer-x)*25px),calc(var(--pointer-y)*15px - var(--scroll-progress)*8vh),0) scale(1.19)}.world-fog-image{transform:translate3d(calc(var(--pointer-x)*12px),calc(var(--pointer-y)*8px - var(--scroll-progress)*4vh),0) scale(1.24)}}
 
-@media(prefers-reduced-motion:reduce){.world-fog-one,.world-fog-two{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.world-fog-one,.world-fog-two{animation:none!important}.world-layer{transform:none!important}}
