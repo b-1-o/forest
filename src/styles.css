@@ -48,3 +48,19 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;pa
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.world-layer,.world-light,.world-fog-one,.world-fog-two{transform:none!important;animation:none!important}.service-row,.project-row,.enter-button,.primary-link{transition:none}.glass-panel{backdrop-filter:none;-webkit-backdrop-filter:none}}
 
 @supports not ((backdrop-filter:blur(1px))){.glass-panel{background:rgba(12,22,16,.82)}}
+
+/* AWWWARD-STYLE ATMOSPHERE: no cursor dot, no cumulative vertical drift, only broad living light. */
+.world{background:#13241a}
+.world::before{content:"";position:absolute;inset:-18%;z-index:5;pointer-events:none;background:radial-gradient(ellipse 44% 24% at calc(50% + var(--pointer-x)*11%) calc(45% + var(--pointer-y)*8%),rgba(204,234,212,.15),transparent 72%),radial-gradient(ellipse 70% 40% at calc(52% - var(--pointer-x)*5%) calc(56% - var(--pointer-y)*3%),rgba(128,178,143,.08),transparent 76%),linear-gradient(112deg,transparent 18%,rgba(222,242,226,.045) 42%,transparent 60%);mix-blend-mode:screen;opacity:.78;transform:translate3d(calc(var(--pointer-x)*10px),calc(var(--pointer-y)*7px),0) scale(1.06);will-change:transform;animation:worldBreath 12s ease-in-out infinite alternate}
+@keyframes worldBreath{from{opacity:.62;filter:saturate(.92)}to{opacity:.9;filter:saturate(1.08)}}
+.world-light{z-index:6;inset:-24%;background:radial-gradient(ellipse 34% 18% at calc(49% + var(--pointer-x)*13%) calc(47% + var(--pointer-y)*9%),rgba(224,244,228,.12),transparent 73%),radial-gradient(ellipse 52% 22% at calc(54% - var(--pointer-x)*8%) calc(60% - var(--pointer-y)*5%),rgba(140,193,154,.075),transparent 78%);transform:translate3d(calc(var(--pointer-x)*16px),calc(var(--pointer-y)*10px),0) scale(1.08);will-change:transform;pointer-events:none}
+.world-cursor{display:none}
+.world-fog-one,.world-fog-two{animation:none}
+
+/* Keep every image safely inside the viewport across the full page. */
+.world-layer{inset:-42%;contain:strict}
+.world-back{transform:translate3d(calc(var(--pointer-x)*8px),calc(var(--pointer-y)*5px - var(--page-progress)*2vh),0) scale(1.34)}
+.world-mid{transform:translate3d(calc(var(--pointer-x)*16px),calc(var(--pointer-y)*10px - var(--page-progress)*4vh),0) scale(1.32)}
+.world-near{transform:translate3d(calc(var(--pointer-x)*25px),calc(var(--pointer-y)*15px - var(--page-progress)*7vh),0) scale(1.30)}
+.world-fog-image{transform:translate3d(calc(var(--pointer-x)*13px),calc(var(--pointer-y)*8px - var(--page-progress)*3vh),0) scale(1.36)}
+@media (max-width:600px){.world-layer{inset:-46%}.world-back{transform:translate3d(calc(var(--pointer-x)*5px),calc(var(--pointer-y)*4px - var(--page-progress)*1.5vh),0) scale(1.40)}.world-mid{transform:translate3d(calc(var(--pointer-x)*9px),calc(var(--pointer-y)*6px - var(--page-progress)*3vh),0) scale(1.38)}.world-near{transform:translate3d(calc(var(--pointer-x)*14px),calc(var(--pointer-y)*9px - var(--page-progress)*5vh),0) scale(1.36)}.world-fog-image{transform:translate3d(calc(var(--pointer-x)*8px),calc(var(--pointer-y)*5px - var(--page-progress)*2vh),0) scale(1.42)}}
