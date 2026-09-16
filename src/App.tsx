@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, ArrowUpRight, Check, Code2, ExternalLink, Layers3, Sparkles } from 'lucide-react'
-import forestImage from '../assets/main wp.jpg'
+import backgroundImage from '../assets/Background.jpg'
+import midgroundImage from '../assets/Midground.jpg'
+import foregroundImage from '../assets/Foreground.jpg'
+import fogImage from '../assets/Fog Atmosphere.jpg'
+import forestImage from '../assets/fforest.jpg'
 import './styles.css'
 
 const navItems = ['about', 'services', 'stack', 'work', 'learning', 'contact'] as const
@@ -52,8 +56,10 @@ function App() {
   }, [])
 
   useEffect(() => {
-    let frame = 0
     const target = worldRef.current
+    if (!target) return
+
+    let frame = 0
     let pointerX = window.innerWidth / 2
     let pointerY = window.innerHeight / 2
     let smoothX = pointerX
@@ -62,26 +68,41 @@ function App() {
     const update = () => {
       const y = window.scrollY
       const vh = window.innerHeight || 1
-      target?.style.setProperty('--scroll', `${y}px`)
-      target?.style.setProperty('--scroll-progress', `${Math.min(y / vh, 12)}`)
-      smoothX += (pointerX - smoothX) * 0.055
-      smoothY += (pointerY - smoothY) * 0.055
-      target?.style.setProperty('--cursor-x', `${smoothX}px`)
-      target?.style.setProperty('--cursor-y', `${smoothY}px`)
+      const maxScroll = Math.max(document.documentElement.scrollHeight - vh, 1)
+      const progress = Math.min(y / vh, 12)
+      const normalizedScroll = Math.min(y / maxScroll, 1)
+      const targetX = (pointerX / Math.max(window.innerWidth, 1) - 0.5) * 2
+      const targetY = (pointerY / Math.max(window.innerHeight, 1) - 0.5) * 2
+
+      smoothX += (targetX - smoothX) * 0.055
+      smoothY += (targetY - smoothY) * 0.055
+
+      target.style.setProperty('--scroll', `${y}px`)
+      target.style.setProperty('--scroll-progress', `${progress}`)
+      target.style.setProperty('--page-progress', `${normalizedScroll}`)
+      target.style.setProperty('--pointer-x', `${smoothX}`)
+      target.style.setProperty('--pointer-y', `${smoothY}`)
+      target.style.setProperty('--mouse-x', `${pointerX}px`)
+      target.style.setProperty('--mouse-y', `${pointerY}px`)
       frame = requestAnimationFrame(update)
     }
 
     const onMouse = (event: MouseEvent) => {
       pointerX = event.clientX
       pointerY = event.clientY
-      target?.style.setProperty('--mouse-x', `${event.clientX}px`)
-      target?.style.setProperty('--mouse-y', `${event.clientY}px`)
+    }
+
+    const onLeave = () => {
+      pointerX = window.innerWidth / 2
+      pointerY = window.innerHeight / 2
     }
 
     update()
     window.addEventListener('mousemove', onMouse, { passive: true })
+    window.addEventListener('mouseleave', onLeave)
     return () => {
       window.removeEventListener('mousemove', onMouse)
+      window.removeEventListener('mouseleave', onLeave)
       cancelAnimationFrame(frame)
     }
   }, [])
@@ -127,9 +148,10 @@ function App() {
       </AnimatePresence>
 
       <div className="world" ref={worldRef} aria-hidden="true">
-        <div className="world-layer world-back"><img src={forestImage} alt="" /></div>
-        <div className="world-layer world-mid"><img src={forestImage} alt="" /></div>
-        <div className="world-layer world-near"><img src={forestImage} alt="" /></div>
+        <div className="world-layer world-back"><img src={backgroundImage} alt="" /></div>
+        <div className="world-layer world-mid"><img src={midgroundImage} alt="" /></div>
+        <div className="world-layer world-near"><img src={foregroundImage} alt="" /></div>
+        <div className="world-layer world-fog-image"><img src={fogImage} alt="" /></div>
         <div className="world-light" />
         <div className="world-fog world-fog-one" />
         <div className="world-fog world-fog-two" />
