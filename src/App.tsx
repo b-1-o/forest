@@ -7,6 +7,7 @@ import midgroundImage from '../assets/Midground.jpg'
 import foregroundImage from '../assets/Foreground.jpg'
 import fogImage from '../assets/Fog Atmosphere.jpg'
 import './styles.css'
+import './cursor-hud.css'
 
 const navItems = ['about', 'services', 'stack', 'work', 'learning', 'contact'] as const
 
