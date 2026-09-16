@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { ArrowDown, ArrowUpRight, Code2, Github, Layers3, Mail, MousePointer2, Sparkles } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Code2, Layers3, Mail, MousePointer2, Sparkles } from 'lucide-react'
+import forestImage from '../assets/main wp.jpg'
 import './styles.css'
 
 const projects = [
@@ -30,7 +32,7 @@ function App(){
   const enter=()=>{setEntered(true);setTimeout(()=>document.querySelector('#about')?.scrollIntoView({behavior:'smooth'}),850)}
   const nav=(id:string)=>{setActive(id);document.querySelector('#'+id)?.scrollIntoView({behavior:'smooth'})}
 
-  return <div className="site" style={{'--mx':`${mouse.x*100}%`,'--my':`${mouse.y*100}%`} as React.CSSProperties}>
+  return <div className="site" style={{'--mx':`${mouse.x*100}%`,'--my':`${mouse.y*100}%`} as CSSProperties}>
     <div className="grain"/><div className="aurora"/>
     <AnimatePresence>{intro && <motion.div className="intro" initial={{opacity:1}} exit={{opacity:0,scale:1.03,filter:'blur(10px)'}} transition={{duration:1.1}}>
       <div className="intro-line"/><motion.p initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:.4}}>ERIK / DIGITAL DESIGN & DEVELOPMENT</motion.p>
@@ -47,7 +49,7 @@ function App(){
     <main>
       <section id="home" ref={heroRef} className="hero">
         <motion.div className="forest" style={{x:forestX,y:forestY}} initial={{scale:1.12}} animate={{scale:1}} transition={{duration:4.2,ease:[.2,.8,.2,1]}}>
-          <img src="./assets/main wp.jpg" alt="misty forest"/>
+          <img src={forestImage} alt="misty forest"/>
         </motion.div>
         <div className="depth d1"/><div className="depth d2"/><div className="mist mist-a"/><div className="mist mist-b"/>
         <div className="hero-vignette"/>
@@ -73,7 +75,7 @@ function App(){
 
       <section id="contact" className="section contact"><div className="section-index">03 / CONTACT</div><div className="contact-wrap"><div><p className="kicker">Have something worth building?</p><h3>Let’s make it<br/><span>feel real.</span></h3></div><a className="contact-card" href="mailto:hello@erik.dev"><span><Mail size={19}/> hello@erik.dev</span><ArrowUpRight/></a></div></section>
     </main>
-    <footer><span>© 2026 ERIK</span><span>BUILT IN THE QUIET</span><a href="https://github.com/b-1-o/forest" target="_blank" rel="noreferrer"><Github size={15}/> SOURCE</a></footer>
+    <footer><span>© 2026 ERIK</span><span>BUILT IN THE QUIET</span><a href="https://github.com/b-1-o/forest" target="_blank" rel="noreferrer">SOURCE</a></footer>
   </div>
 }
 export default App
