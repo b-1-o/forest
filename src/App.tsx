@@ -6,7 +6,6 @@ import backgroundImage from '../assets/Background.jpg'
 import midgroundImage from '../assets/Midground.jpg'
 import foregroundImage from '../assets/Foreground.jpg'
 import fogImage from '../assets/Fog Atmosphere.jpg'
-import forestImage from '../assets/fforest.jpg'
 import './styles.css'
 
 const navItems = ['about', 'services', 'stack', 'work', 'learning', 'contact'] as const
@@ -59,50 +58,66 @@ function App() {
     const target = worldRef.current
     if (!target) return
 
-    let frame = 0
     let pointerX = window.innerWidth / 2
     let pointerY = window.innerHeight / 2
-    let smoothX = pointerX
-    let smoothY = pointerY
+    let smoothX = 0
+    let smoothY = 0
+    let frame = 0
+    let activeMotion = false
 
-    const update = () => {
-      const y = window.scrollY
-      const vh = window.innerHeight || 1
-      const maxScroll = Math.max(document.documentElement.scrollHeight - vh, 1)
-      const progress = Math.min(y / vh, 12)
-      const normalizedScroll = Math.min(y / maxScroll, 1)
+    const paint = () => {
+      activeMotion = false
       const targetX = (pointerX / Math.max(window.innerWidth, 1) - 0.5) * 2
       const targetY = (pointerY / Math.max(window.innerHeight, 1) - 0.5) * 2
+      smoothX += (targetX - smoothX) * 0.11
+      smoothY += (targetY - smoothY) * 0.11
 
-      smoothX += (targetX - smoothX) * 0.055
-      smoothY += (targetY - smoothY) * 0.055
-
-      target.style.setProperty('--scroll', `${y}px`)
-      target.style.setProperty('--scroll-progress', `${progress}`)
-      target.style.setProperty('--page-progress', `${normalizedScroll}`)
-      target.style.setProperty('--pointer-x', `${smoothX}`)
-      target.style.setProperty('--pointer-y', `${smoothY}`)
+      target.style.setProperty('--pointer-x', smoothX.toFixed(4))
+      target.style.setProperty('--pointer-y', smoothY.toFixed(4))
       target.style.setProperty('--mouse-x', `${pointerX}px`)
       target.style.setProperty('--mouse-y', `${pointerY}px`)
-      frame = requestAnimationFrame(update)
+
+      if (Math.abs(targetX - smoothX) > 0.002 || Math.abs(targetY - smoothY) > 0.002) {
+        activeMotion = true
+        frame = requestAnimationFrame(paint)
+      }
     }
 
-    const onMouse = (event: MouseEvent) => {
+    const schedulePointer = (event: MouseEvent) => {
       pointerX = event.clientX
       pointerY = event.clientY
+      if (!activeMotion) frame = requestAnimationFrame(paint)
     }
 
     const onLeave = () => {
       pointerX = window.innerWidth / 2
       pointerY = window.innerHeight / 2
+      if (!activeMotion) frame = requestAnimationFrame(paint)
     }
 
-    update()
-    window.addEventListener('mousemove', onMouse, { passive: true })
+    const updateScroll = () => {
+      const y = window.scrollY
+      const vh = window.innerHeight || 1
+      const maxScroll = Math.max(document.documentElement.scrollHeight - vh, 1)
+      target.style.setProperty('--scroll', `${y}px`)
+      target.style.setProperty('--scroll-progress', `${Math.min(y / vh, 12).toFixed(4)}`)
+      target.style.setProperty('--page-progress', `${Math.min(y / maxScroll, 1).toFixed(4)}`)
+    }
+
+    target.style.setProperty('--pointer-x', '0')
+    target.style.setProperty('--pointer-y', '0')
+    updateScroll()
+    paint()
+    window.addEventListener('mousemove', schedulePointer, { passive: true })
     window.addEventListener('mouseleave', onLeave)
+    window.addEventListener('scroll', updateScroll, { passive: true })
+    window.addEventListener('resize', updateScroll, { passive: true })
+
     return () => {
-      window.removeEventListener('mousemove', onMouse)
+      window.removeEventListener('mousemove', schedulePointer)
       window.removeEventListener('mouseleave', onLeave)
+      window.removeEventListener('scroll', updateScroll)
+      window.removeEventListener('resize', updateScroll)
       cancelAnimationFrame(frame)
     }
   }, [])
@@ -156,7 +171,6 @@ function App() {
         <div className="world-fog world-fog-one" />
         <div className="world-fog world-fog-two" />
         <div className="world-vignette" />
-        <div className="world-grain" />
         <div className="world-cursor" />
       </div>
 
