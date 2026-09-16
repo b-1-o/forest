@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, ArrowUpRight, Check, Code2, ExternalLink, GithubIcon, Layers3, Mail, Sparkles } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Check, Code2, ExternalLink, Layers3, Mail, Sparkles } from 'lucide-react'
 import forestImage from '../assets/main wp.jpg'
 import './styles.css'
 
@@ -65,7 +65,7 @@ function App() {
       <section className="principle-section"><Reveal className="principle"><span>THE PRINCIPLE</span><h3>Less noise.<br /><em>More signal.</em></h3><p>Every transition has a reason. Every pixel earns its place.</p></Reveal></section>
       <section id="contact" className="immersive-section contact-section"><div className="section-number">06 / CONTACT</div><Reveal className="glass-panel contact-panel"><span>HAVE SOMETHING WORTH BUILDING?</span><h3>Let's make it <em>feel real.</em></h3><div className="contact-actions"><a className="primary-link" href="https://www.fiverr.com/s/Q27bB5p" target="_blank" rel="noreferrer">START A PROJECT <ExternalLink size={16} /></a><a className="secondary-link" href="mailto:hello@erik.dev"><Mail size={16} /> EMAIL</a></div></Reveal></section>
     </main>
-    <footer><span>WEB / UI / DEVELOPMENT</span><span>BUILT IN THE QUIET</span><a href="https://github.com/b-1-o/forest" target="_blank" rel="noreferrer"><GithubIcon size={14} /> SOURCE</a></footer>
+    <footer><span>WEB / UI / DEVELOPMENT</span><span>BUILT IN THE QUIET</span><a href="https://github.com/b-1-o/forest" target="_blank" rel="noreferrer">SOURCE</a></footer>
   </div>
 }
 
