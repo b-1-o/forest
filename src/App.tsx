@@ -48,6 +48,11 @@ function App() {
   const [intro, setIntro] = useState(true)
   const [active, setActive] = useState('home')
   const worldRef = useRef<HTMLDivElement>(null)
+  const cursorHudRef = useRef<HTMLDivElement>(null)
+  const cursorXRef = useRef<HTMLSpanElement>(null)
+  const cursorYRef = useRef<HTMLSpanElement>(null)
+  const cursorSpeedRef = useRef<HTMLSpanElement>(null)
+  const cursorSectionRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     const timer = window.setTimeout(() => setIntro(false), 3000)
@@ -60,10 +65,13 @@ function App() {
 
     let pointerX = window.innerWidth / 2
     let pointerY = window.innerHeight / 2
+    let previousX = pointerX
+    let previousY = pointerY
     let smoothX = 0
     let smoothY = 0
     let frame = 0
     let activeMotion = false
+    let hideTimer = 0
 
     const paint = () => {
       activeMotion = false
@@ -72,10 +80,20 @@ function App() {
       smoothX += (targetX - smoothX) * 0.11
       smoothY += (targetY - smoothY) * 0.11
 
+      const velocity = Math.min(Math.hypot(pointerX - previousX, pointerY - previousY), 99)
+      previousX += (pointerX - previousX) * 0.12
+      previousY += (pointerY - previousY) * 0.12
+
       target.style.setProperty('--pointer-x', smoothX.toFixed(4))
       target.style.setProperty('--pointer-y', smoothY.toFixed(4))
       target.style.setProperty('--mouse-x', `${pointerX}px`)
       target.style.setProperty('--mouse-y', `${pointerY}px`)
+      target.style.setProperty('--cursor-energy', `${Math.min(1, velocity / 24).toFixed(3)}`)
+
+      if (cursorXRef.current) cursorXRef.current.textContent = String(Math.round(pointerX)).padStart(4, '0')
+      if (cursorYRef.current) cursorYRef.current.textContent = String(Math.round(pointerY)).padStart(4, '0')
+      if (cursorSpeedRef.current) cursorSpeedRef.current.textContent = String(Math.round(velocity)).padStart(2, '0')
+      if (cursorSectionRef.current) cursorSectionRef.current.textContent = `/${active.toUpperCase()}`
 
       if (Math.abs(targetX - smoothX) > 0.002 || Math.abs(targetY - smoothY) > 0.002) {
         activeMotion = true
@@ -87,12 +105,16 @@ function App() {
       pointerX = event.clientX
       pointerY = event.clientY
       if (!activeMotion) frame = requestAnimationFrame(paint)
+      cursorHudRef.current?.classList.add('is-moving')
+      window.clearTimeout(hideTimer)
+      hideTimer = window.setTimeout(() => cursorHudRef.current?.classList.remove('is-moving'), 160)
     }
 
     const onLeave = () => {
       pointerX = window.innerWidth / 2
       pointerY = window.innerHeight / 2
       if (!activeMotion) frame = requestAnimationFrame(paint)
+      cursorHudRef.current?.classList.remove('is-moving')
     }
 
     const updateScroll = () => {
@@ -102,10 +124,12 @@ function App() {
       target.style.setProperty('--scroll', `${y}px`)
       target.style.setProperty('--scroll-progress', `${Math.min(y / vh, 12).toFixed(4)}`)
       target.style.setProperty('--page-progress', `${Math.min(y / maxScroll, 1).toFixed(4)}`)
+      if (cursorSectionRef.current) cursorSectionRef.current.textContent = `/${active.toUpperCase()}`
     }
 
     target.style.setProperty('--pointer-x', '0')
     target.style.setProperty('--pointer-y', '0')
+    target.style.setProperty('--cursor-energy', '0')
     updateScroll()
     paint()
     window.addEventListener('mousemove', schedulePointer, { passive: true })
@@ -118,9 +142,10 @@ function App() {
       window.removeEventListener('mouseleave', onLeave)
       window.removeEventListener('scroll', updateScroll)
       window.removeEventListener('resize', updateScroll)
+      window.clearTimeout(hideTimer)
       cancelAnimationFrame(frame)
     }
-  }, [])
+  }, [active])
 
   useEffect(() => {
     const elements = ['home', ...navItems]
@@ -171,7 +196,17 @@ function App() {
         <div className="world-fog world-fog-one" />
         <div className="world-fog world-fog-two" />
         <div className="world-vignette" />
-        <div className="world-cursor" />
+        <div className="world-cursor-hud" ref={cursorHudRef}>
+          <div className="cursor-crosshair" />
+          <div className="cursor-line cursor-line-x" />
+          <div className="cursor-line cursor-line-y" />
+          <div className="cursor-data cursor-data-top"><span>X <b ref={cursorXRef}>0000</b></span><span>Y <b ref={cursorYRef}>0000</b></span></div>
+          <div className="cursor-data cursor-data-bottom"><span>SPD <b ref={cursorSpeedRef}>00</b></span><span ref={cursorSectionRef}>/HOME</span></div>
+          <div className="cursor-bracket cursor-bracket-tl" />
+          <div className="cursor-bracket cursor-bracket-tr" />
+          <div className="cursor-bracket cursor-bracket-bl" />
+          <div className="cursor-bracket cursor-bracket-br" />
+        </div>
       </div>
 
       <header className="nav">
