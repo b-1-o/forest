@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUpRight, Check, Code2, ExternalLink, Layers3, Sparkles 
 import forestImage from '../assets/main wp.jpg'
 import './styles.css'
 import './performance.css'
+import './mobile.css'
 
 const navItems = ['about', 'services', 'stack', 'work', 'learning', 'contact'] as const
 const services = [
@@ -44,6 +45,27 @@ function App() {
   useEffect(() => {
     const timer = window.setTimeout(() => setIntro(false), 3000)
     return () => window.clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const world = worldRef.current
+    if (!world) return
+
+    const updateBackgroundDim = () => {
+      const heroHeight = window.innerHeight
+      const start = heroHeight * 0.55
+      const end = heroHeight * 1.05
+      const progress = Math.max(0, Math.min(1, (window.scrollY - start) / (end - start)))
+      world.style.setProperty('--world-dim', (progress * 0.1).toFixed(3))
+    }
+
+    updateBackgroundDim()
+    window.addEventListener('scroll', updateBackgroundDim, { passive: true })
+    window.addEventListener('resize', updateBackgroundDim)
+    return () => {
+      window.removeEventListener('scroll', updateBackgroundDim)
+      window.removeEventListener('resize', updateBackgroundDim)
+    }
   }, [])
 
   useEffect(() => {
@@ -121,6 +143,7 @@ function App() {
       <div className="world" ref={worldRef} aria-hidden="true">
         <div className="world-base"><img src={forestImage} alt="" /></div>
         <div className="world-vignette" />
+        <div className="world-dim" />
       </div>
 
       <header className="nav">
